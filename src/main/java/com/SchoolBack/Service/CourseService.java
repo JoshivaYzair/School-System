@@ -1,11 +1,12 @@
-
 package com.SchoolBack.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.SchoolBack.Entity.Course;
+import com.SchoolBack.Entity.Student;
 import com.SchoolBack.Exception.CourseNotFoundException;
 import com.SchoolBack.Exception.CourseServiceBusinessException;
+import com.SchoolBack.Model.addStudentToCourseDTO;
 import com.SchoolBack.Model.courseDTO;
 import com.SchoolBack.Repository.CourseRepository;
 import com.SchoolBack.Util.ValueMapper;
@@ -15,15 +16,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CourseService {
-	
+
 	private final CourseRepository repository;
 	private final SchoolService schoolService;
 	private final TeacherService teacherService;
+	private final StudentService studentService;
 
 	public Course findById(Long id) {
 		Course course;
@@ -52,11 +55,11 @@ public class CourseService {
 		var school = schoolService.findById(entity.getSchoolId());
 		try {
 			log.info("CourseService:save execution started.");
-			Course course = ValueMapper.convertCourseDTOToCourse(entity,school.get(),teacher);
+			Course course = ValueMapper.convertCourseDTOToCourse(entity, school.get(), teacher);
 			log.debug("CourseService:createNewCourse request parameters {}", ValueMapper.jsonAsString(course));
 			Course cs = repository.save(course);
 			courseResult = cs;
-			log.debug("TeacherService:createNewCourse received response from Database {}", ValueMapper.jsonAsString(cs));
+			log.debug("CourseService:createNewCourse received response from Database {}", ValueMapper.jsonAsString(cs));
 		} catch (Exception e) {
 			log.error("Exception occurred while persisting course to database , Exception message {}", e.getMessage());
 			throw new CourseServiceBusinessException("Exception occurred while create a new course");
@@ -64,7 +67,7 @@ public class CourseService {
 		log.info("CourseService:createNewCourse execution ended.");
 		return courseResult;
 	}
-	
+
 	public Course update(Long id, courseDTO entity) {
 		Course courseResult;
 		try {
@@ -84,24 +87,45 @@ public class CourseService {
 	}
 
 	public void deleteById(Long id) {
-		try{
+		try {
 			log.debug("CourseService:deleteById execution started.");
 			Course course = this.findById(id);
-			log.debug("CourseService:deleteById received response with id {} parameters {}", id,ValueMapper.jsonAsString(course));
+			log.debug("CourseService:deleteById received response with id {} parameters {}", id, ValueMapper.jsonAsString(course));
 			course.setActive(false);
 			repository.save(course);
-		}catch (Exception e){
+		} catch (Exception e) {
 			log.error("Exception occurred while deleting course from database , Exception message {}", e.getMessage());
 			throw new CourseServiceBusinessException("Exception occurred while delete a grade from database:  " + e.getMessage());
 		}
 		log.info("CourseService:deleteById execution ended.");
 	}
 
+	public void addStudentToCourse(Long courseId, addStudentToCourseDTO studentList) {
+		Course courseResult;
+		log.info("CourseService:AddStudentToCourse execution started.");
+		try {
+			log.info("CourseService:AddStudentToCourse execution started.");
+			Course course = this.findById(courseId);
+			for (Long studentId : studentList.getStudentList()) {
+				Student student = studentService.findById(studentId);
+				student.getCourses().add(course);
+				course.getStudents().add(student);
+				studentService.addCourseToStudent(student);
+			}
+			courseResult = course;
+		} catch (Exception e) {
+			log.error("Exception occurred while persisting new student into course to database , Exception message {}", e.getMessage());
+			throw new CourseServiceBusinessException("Exception occurred while add a new student in the course");
+		}
+		repository.save(courseResult);
+		log.info("CourseService:AddStudentToCourse execution ended.");
+	}
+
 	public Page<Course> findAll(int page, int size, String sortBy, String sortDirection) {
 		Page<Course> courseResult;
 		try {
 			log.info("CourseService:findAll execution started.");
-			log.debug("CourseService:findAll request parameters :page {} size {} sortBy {} sortDirection {}", page,size,sortBy,sortDirection);
+			log.debug("CourseService:findAll request parameters :page {} size {} sortBy {} sortDirection {}", page, size, sortBy, sortDirection);
 			Sort.Direction direction = Sort.Direction.fromString(sortDirection);
 			Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 			courseResult = repository.findAll(GenericSpecifications.isActive(), pageable);

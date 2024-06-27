@@ -60,6 +60,10 @@ public class StudentService {
 		log.info("StudentService:createNewStudent execution ended.");
 		return studentResult;
 	}
+	
+	public void addCourseToStudent (Student student){
+		repository.save(student);
+	}
 
 	public Student update(Long id, studentDTO entity) {
 		Student studentResult;

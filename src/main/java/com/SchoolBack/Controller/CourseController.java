@@ -5,15 +5,18 @@ import lombok.RequiredArgsConstructor;
 import com.SchoolBack.Entity.Course;
 import com.SchoolBack.Model.APIResponse;
 import com.SchoolBack.Model.PagedResponseDTO;
+import com.SchoolBack.Model.addStudentToCourseDTO;
 import com.SchoolBack.Model.courseDTO;
 import com.SchoolBack.Util.ValueMapper;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,11 +30,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class CourseController {
-	
+
 	private final CourseService courseService;
-	
+
 	@PostMapping
-	public ResponseEntity<APIResponse> saveCourse( @Valid @RequestBody courseDTO course) {
+	public ResponseEntity<APIResponse> saveCourse(@Valid @RequestBody courseDTO course) {
 		log.info("CourseController::createNewCourse request body {}", ValueMapper.jsonAsString(course));
 		Course cs = courseService.save(course);
 
@@ -44,7 +47,6 @@ public class CourseController {
 		log.info("CourseController::createNewCourse response {}", ValueMapper.jsonAsString(responseDTO));
 		return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
 	}
-
 
 	@GetMapping("/{id}")
 	public ResponseEntity<APIResponse> getCourse(@PathVariable("id") Long id) {
@@ -60,13 +62,13 @@ public class CourseController {
 		log.info("CourseController::getCourse by id {} response {}", id, ValueMapper.jsonAsString(responseDTO));
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
-	
+
 	@GetMapping
 	public ResponseEntity<APIResponse<PagedResponseDTO<Course>>> getAllCourses(
-		@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "10") int size,
-		@RequestParam(defaultValue = "id") String sortBy,
-		@RequestParam(defaultValue = "asc") String sortDirection) {
+	@RequestParam(defaultValue = "0") int page,
+	@RequestParam(defaultValue = "10") int size,
+	@RequestParam(defaultValue = "id") String sortBy,
+	@RequestParam(defaultValue = "asc") String sortDirection) {
 
 		log.info("CourseController::getAllCourses with page {} size {} sortBy {} sortDirection {}", page, size, sortBy, sortDirection);
 		Page<Course> courses = courseService.findAll(page, size, sortBy, sortDirection);
@@ -117,5 +119,12 @@ public class CourseController {
 
 		log.info("CourseController::deleteCourse by id {}  response {}", id, ValueMapper.jsonAsString(responseDTO));
 		return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+	}
+
+	@PatchMapping("/{id}")
+	public ResponseEntity<Void> addStudentsToCourse(@PathVariable("id") Long courseId, @RequestBody addStudentToCourseDTO studentIds) {
+		log.info("CourseController:AddStudentToCourse execution started.");
+		courseService.addStudentToCourse(courseId, studentIds);
+		return ResponseEntity.ok().build();
 	}
 }

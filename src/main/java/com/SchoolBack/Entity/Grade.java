@@ -1,6 +1,7 @@
 package com.SchoolBack.Entity;
 
 import com.SchoolBack.Entity.Interface.Activable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,10 +38,12 @@ public class Grade implements Activable{
 	private boolean isActive;
 	
 	@ManyToOne
+	@JsonIgnore
 	@JoinColumn(name = "id_student", nullable = false)
 	private Student student;
 	
 	@ManyToOne
+	@JsonIgnore
 	@JoinColumn (name = "id_course", nullable = false)
 	private Course course;
 }

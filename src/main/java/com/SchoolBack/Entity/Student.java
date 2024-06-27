@@ -16,6 +16,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -56,7 +57,7 @@ public class Student implements Activable{
 	@OneToMany (mappedBy = "student")
 	private List<Grade> grades;
 	
-	@JsonIgnore
+	//@JsonIgnore
 	@ManyToMany
 	@JoinTable(name = "student_course", joinColumns = @JoinColumn(name = "id_student"), inverseJoinColumns = @JoinColumn (name = "id_course"))
 	private List<Course> courses;

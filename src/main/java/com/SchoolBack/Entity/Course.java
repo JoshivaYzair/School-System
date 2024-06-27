@@ -1,6 +1,8 @@
 package com.SchoolBack.Entity;
 
 import com.SchoolBack.Entity.Interface.Activable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -42,16 +44,18 @@ public class Course implements Activable{
 	private boolean isActive;
 	
 	@ManyToOne
-	@JoinColumn(name = "id_teacher", nullable = false, referencedColumnName = "name", insertable = false, updatable = false)
+	@JoinColumn(name = "id_teacher", nullable = false)
 	private Teacher teacher;
 	
 	@ManyToOne
-	@JoinColumn(name = "id_school", nullable = false, referencedColumnName = "school_title", insertable = false, updatable = false)
+	@JsonIgnore
+	@JoinColumn(name = "id_school", nullable = false)
 	private School school;
 	
 	@OneToMany(mappedBy = "course")
 	private List<Grade> grades;
 	
-	@ManyToMany(mappedBy = "courses")
+	@ManyToMany(mappedBy = "courses",cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JsonIgnore
 	private List<Student> students;
 }

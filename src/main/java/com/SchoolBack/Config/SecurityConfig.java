@@ -58,6 +58,20 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.PUT, "/api/v1/course/**").hasAnyAuthority(Permission.ADMIN_UPDATE.getPermission())
 				.requestMatchers(HttpMethod.GET, "/api/v1/course/**").hasAnyAuthority(Permission.TEACHER_READ.getPermission(),
 																			Permission.STUDENT_READ.getPermission())
+				.requestMatchers(HttpMethod.PATCH, "/api/v1/course/**").hasAnyAuthority(Permission.ADMIN_UPDATE.getPermission(), 
+																		            Permission.TEACHER_UPDATE.getPermission())
+				
+				//Grade's Route
+				
+				.requestMatchers( "/api/v1/grade/").hasAnyRole(Role.TEACHER.name(), Role.ADMIN.name(),Role.STUDENT.name())
+			
+				.requestMatchers(HttpMethod.POST, "/api/v1/grade/**").hasAnyAuthority(Permission.ADMIN_CREATE.getPermission(), 
+																			Permission.TEACHER_CREATE.getPermission())
+				.requestMatchers(HttpMethod.DELETE, "/api/v1/grade/**").hasAnyAuthority(Permission.ADMIN_DELETE.getPermission())
+				.requestMatchers(HttpMethod.PUT, "/api/v1/grade/**").hasAnyAuthority(Permission.ADMIN_UPDATE.getPermission(), 
+																		            Permission.TEACHER_UPDATE.getPermission())
+				.requestMatchers(HttpMethod.GET, "/api/v1/grade/**").hasAnyAuthority(Permission.TEACHER_READ.getPermission(),
+																			Permission.STUDENT_READ.getPermission())
 				.anyRequest().denyAll();
 			})
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
