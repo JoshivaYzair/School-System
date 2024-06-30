@@ -127,4 +127,11 @@ public class CourseController {
 		courseService.addStudentToCourse(courseId, studentIds);
 		return ResponseEntity.ok().build();
 	}
+	
+	@DeleteMapping("/student/{id}")
+	public ResponseEntity<Void> removeStudentsToCourse(@PathVariable("id") Long courseId, @RequestBody addStudentToCourseDTO studentIds) {
+		log.info("CourseController:AddStudentToCourse execution started.");
+		courseService.RemoveStudentFromCourse(courseId, studentIds);
+		return ResponseEntity.ok().build();
+	}
 }

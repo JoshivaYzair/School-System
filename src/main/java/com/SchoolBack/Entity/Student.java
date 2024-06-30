@@ -2,9 +2,11 @@ package com.SchoolBack.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.SchoolBack.Entity.Interface.Activable;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,8 +39,8 @@ public class Student implements Activable{
 	@Column(nullable = false, length = 100)
 	private String name;
 	
-	@Column(nullable = false)
-	private int grade;
+	@Column(length = 100)
+	private String major;
 	
 	@Column(name = "active")
 	private boolean isActive;
@@ -53,13 +55,8 @@ public class Student implements Activable{
 	@JoinColumn(name = "user_email", referencedColumnName = "email",unique = true)
 	private User user;
 	
-	@JsonIgnore
-	@OneToMany (mappedBy = "student")
-	private List<Grade> grades;
-	
-	//@JsonIgnore
-	@ManyToMany
-	@JoinTable(name = "student_course", joinColumns = @JoinColumn(name = "id_student"), inverseJoinColumns = @JoinColumn (name = "id_course"))
-	private List<Course> courses;
+	@JsonManagedReference
+	@OneToMany(mappedBy = "student" ,fetch = FetchType.LAZY) 
+	private List<Enrollment> enrollments;
 	
 }

@@ -2,9 +2,11 @@ package com.SchoolBack.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.SchoolBack.Entity.Interface.Activable;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,6 +26,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "teacher")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Teacher implements Activable{
 	
 	@Id
@@ -40,12 +43,11 @@ public class Teacher implements Activable{
 	private String departament;
 	
 	@JsonIgnore
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_email", referencedColumnName = "email")
 	private User user;
 	
-	@OneToMany (mappedBy = "teacher")
-	@JsonIgnore
+	@OneToMany (mappedBy = "teacher",fetch = FetchType.LAZY)
 	private List<Course> courses;
 	
 }

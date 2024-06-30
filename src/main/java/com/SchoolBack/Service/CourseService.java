@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.SchoolBack.Entity.Course;
 import com.SchoolBack.Entity.Student;
+import com.SchoolBack.Entity.Enrollment;
 import com.SchoolBack.Exception.CourseNotFoundException;
 import com.SchoolBack.Exception.CourseServiceBusinessException;
 import com.SchoolBack.Model.addStudentToCourseDTO;
 import com.SchoolBack.Model.courseDTO;
 import com.SchoolBack.Repository.CourseRepository;
+import com.SchoolBack.Repository.EnrollmentRepository;
 import com.SchoolBack.Util.ValueMapper;
 import com.SchoolBack.Util.GenericSpecifications;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +18,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CourseService {
 
 	private final CourseRepository repository;
+	private final EnrollmentRepository enrollmentRepository;
 	private final SchoolService schoolService;
 	private final TeacherService teacherService;
 	private final StudentService studentService;
@@ -101,24 +103,37 @@ public class CourseService {
 	}
 
 	public void addStudentToCourse(Long courseId, addStudentToCourseDTO studentList) {
-		Course courseResult;
+		//Course courseResult;
 		log.info("CourseService:AddStudentToCourse execution started.");
 		try {
 			log.info("CourseService:AddStudentToCourse execution started.");
 			Course course = this.findById(courseId);
 			for (Long studentId : studentList.getStudentList()) {
 				Student student = studentService.findById(studentId);
-				student.getCourses().add(course);
-				course.getStudents().add(student);
-				studentService.addCourseToStudent(student);
+				var enrollment = new Enrollment();
+				enrollment.setCourse(course);
+				enrollment.setStudent(student);
+				enrollmentRepository.save(enrollment);
 			}
-			courseResult = course;
 		} catch (Exception e) {
 			log.error("Exception occurred while persisting new student into course to database , Exception message {}", e.getMessage());
 			throw new CourseServiceBusinessException("Exception occurred while add a new student in the course");
 		}
-		repository.save(courseResult);
 		log.info("CourseService:AddStudentToCourse execution ended.");
+	}
+	
+	//@Transactional
+	public void RemoveStudentFromCourse(Long courseId, addStudentToCourseDTO studentList) {
+		log.info("CourseService:RemoveStudentToCourse execution started.");
+		Course course = this.findById(courseId);
+		Enrollment enrollment = enrollmentRepository.findByStudentAndCourse(studentList.getStudentList().get(0),course.getId());
+		try {
+			enrollmentRepository.delete(enrollment);
+		} catch (Exception e) {
+			log.error("Exception occurred while removing a student from course , Exception message {}", e.getMessage());
+			throw new CourseServiceBusinessException("Exception occurred while remove a student from course");
+		}
+		log.info("CourseService:RemoveStudentToCourse execution ended.");
 	}
 
 	public Page<Course> findAll(int page, int size, String sortBy, String sortDirection) {
