@@ -28,7 +28,7 @@ public class TeacherService {
 			log.info("TeacherService:findByID execution started.");
 			Teacher th = repository.findById(id).orElseThrow(
 			() -> new TeacherNotFoundException("Teacher not found with id: " + id));
-
+			
 			if (!th.isActive()) {
 				log.warn("Teacher with id {} is not active", id);
 				throw new TeacherNotFoundException("Teacher not active with id: " + id);

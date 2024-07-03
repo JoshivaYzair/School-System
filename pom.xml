@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.security</groupId>
 	<artifactId>SchoolBack</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-Beta</version>
 	<name>SchoolBack</name>
-	<description>Demo project for Spring Boot</description>
+	<description>A rest API</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

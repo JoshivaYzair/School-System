@@ -2,7 +2,9 @@ package com.SchoolBack.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.SchoolBack.Entity.Interface.Activable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,6 +49,7 @@ public class Teacher implements Activable{
 	@JoinColumn(name = "user_email", referencedColumnName = "email")
 	private User user;
 	
+	@JsonBackReference
 	@OneToMany (mappedBy = "teacher",fetch = FetchType.LAZY)
 	private List<Course> courses;
 	
