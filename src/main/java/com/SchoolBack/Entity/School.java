@@ -13,6 +13,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 
@@ -21,6 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
+@EqualsAndHashCode
 @Table(name = "school")
 public class School implements Activable{
 
@@ -34,6 +36,7 @@ public class School implements Activable{
 	@Column (nullable = false, length = 200)
 	private String address;
 	
+	@JsonIgnore
 	@Column(name = "active")
 	private boolean isActive;
 	

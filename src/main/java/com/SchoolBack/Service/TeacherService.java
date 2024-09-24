@@ -6,13 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import com.SchoolBack.Entity.Teacher;
 import com.SchoolBack.Exception.TeacherNotFoundException;
 import com.SchoolBack.Exception.TeacherServiceBusinessException;
-import com.SchoolBack.Model.teacherDTO;
+import com.SchoolBack.Model.teacherUpdateDTO;
 import com.SchoolBack.Util.ValueMapper;
 import com.SchoolBack.Util.GenericSpecifications;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class TeacherService {
 	
 	private final TeacherRepository repository;
+	private final ValueMapper mapper;
 
 	public Teacher findById(Long id) {
 		Teacher teacher;
@@ -33,7 +35,7 @@ public class TeacherService {
 				log.warn("Teacher with id {} is not active", id);
 				throw new TeacherNotFoundException("Teacher not active with id: " + id);
 			}
-			log.debug("TeacherService:findById retrieving student from database for id {} {}", id, ValueMapper.jsonAsString(th));
+			log.debug("TeacherService:findById retrieving student from database for id {} {}", id, mapper.jsonAsString(th));
 			teacher = th;
 		} catch (Exception e) {
 			log.error("Exception occurred while retrieving Teacher {} from database , Exception message {}", e.getMessage());
@@ -43,15 +45,14 @@ public class TeacherService {
 		return teacher;
 	}
 
-	public Teacher save(teacherDTO entity) {
+	public Teacher save(Teacher entity) {
 		Teacher teacherResult;
 		try {
 			log.info("TeacherService:save execution started.");
-			Teacher teacher = ValueMapper.convertTeacherDTOToTeacher(entity);
-			log.debug("TeacherService:createNewTeacher request parameters {}", ValueMapper.jsonAsString(teacher));
-			Teacher th = repository.save(teacher);
+			log.debug("TeacherService:createNewTeacher request parameters {}", mapper.jsonAsString(entity));
+			Teacher th = repository.save(entity);
 			teacherResult = th;
-			log.debug("TeacherService:createNewTeacher received response from Database {}", ValueMapper.jsonAsString(th));
+			log.debug("TeacherService:createNewTeacher received response from Database {}", mapper.jsonAsString(th));
 		} catch (Exception e) {
 			log.error("Exception occurred while persisting teacher to database , Exception message {}", e.getMessage());
 			throw new TeacherServiceBusinessException("Exception occurred while create a new teacher");
@@ -60,16 +61,16 @@ public class TeacherService {
 		return teacherResult;
 	}
 	
-	public Teacher update(Long id, teacherDTO entity) {
+	public Teacher update(Long id, teacherUpdateDTO entity) {
 		Teacher teacherResult;
 		try {
 			log.info("TeacherService:update execution started.");
 			Teacher teacherToUpdate = this.findById(id);
-			Teacher teacher = ValueMapper.updateTeacherFromDTO(teacherToUpdate, entity);
-			log.debug("TeacherService:update request parameters {}", ValueMapper.jsonAsString(teacher));
+			Teacher teacher = mapper.updateTeacherFromDTO(teacherToUpdate, entity);
+			log.debug("TeacherService:update request parameters {}", mapper.jsonAsString(teacher));
 			Teacher th = repository.save(teacher);
 			teacherResult = th;
-			log.debug("TeacherService:update received response from Database {}", ValueMapper.jsonAsString(teacherResult));
+			log.debug("TeacherService:update received response from Database {}", mapper.jsonAsString(teacherResult));
 		} catch (Exception e) {
 			log.error("Exception occurred while persisting student to database , Exception message {}", e.getMessage());
 			throw new TeacherServiceBusinessException("Exception occurred while update a teacher: " + e.getMessage());
@@ -82,8 +83,9 @@ public class TeacherService {
 		try{
 			log.debug("TeacherService:deleteById execution started.");
 			Teacher teacher = this.findById(id);
-			log.debug("TeacherService:deleteById received response with id {} parameters {}", id,ValueMapper.jsonAsString(teacher));
+			log.debug("TeacherService:deleteById received response with id {} parameters {}", id,mapper.jsonAsString(teacher));
 			teacher.setActive(false);
+			teacher.getUser().setActive(false);
 			repository.save(teacher);
 		}catch (Exception e){
 			log.error("Exception occurred while deleting teacher from database , Exception message {}", e.getMessage());
@@ -92,15 +94,17 @@ public class TeacherService {
 		log.info("StudentService:deleteById execution ended.");
 	}
 
-	public Page<Teacher> findAll(int page, int size, String sortBy, String sortDirection) {
+	public Page<Teacher> findAll(int page, int size, String sortBy, String sortDirection,String filter) {
 		Page<Teacher> teacherResult;
 		try {
 			log.info("TeacherService:findAll execution started.");
-			log.debug("TeacherService:findAll request parameters :page {} size {} sortBy {} sortDirection {}", page,size,sortBy,sortDirection);
+			log.debug("TeacherService:findAll request parameters :page {} size {} sortBy {} sortDirection {} filter {}", page,size,sortBy,sortDirection, filter);
 			Sort.Direction direction = Sort.Direction.fromString(sortDirection);
+			Specification<Teacher> spec = GenericSpecifications.isActive();
+			spec = spec.and(GenericSpecifications.hasNameOrEmail(filter));
 			Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-			teacherResult = repository.findAll(GenericSpecifications.isActive(), pageable);
-			log.debug("TeacherService:findAll received response from Database {}", ValueMapper.jsonAsString(teacherResult));
+			teacherResult = repository.findAll(spec, pageable);
+			log.debug("TeacherService:findAll received response from Database {}", mapper.jsonAsString(teacherResult));
 		} catch (Exception e) {
 			log.error("Exception occurred while persisting teacher to database , Exception message {}", e.getMessage());
 			throw new TeacherServiceBusinessException("Exception occurred while fetch a teacher: " + e.getMessage());

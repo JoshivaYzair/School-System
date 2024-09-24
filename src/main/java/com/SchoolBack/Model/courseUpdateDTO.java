@@ -4,18 +4,8 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class courseDTO {
-	
+public class courseUpdateDTO {
 	private String name;
-	
 	private String courseCode;
-	
-	private String schedule;
-	
-	@NonNull
-	private Long teacherId;
-	
-	@NonNull
-	private Long schoolId;
 
 }

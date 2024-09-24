@@ -1,14 +1,14 @@
 package com.SchoolBack.Controller;
 
-import com.SchoolBack.Model.teacherDTO;
+import com.SchoolBack.Model.teacherUpdateDTO;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.SchoolBack.Entity.Teacher;
 import com.SchoolBack.Model.APIResponse;
-import com.SchoolBack.Model.PagedResponseDTO;
 import com.SchoolBack.Service.TeacherService;
 import com.SchoolBack.Util.ValueMapper;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import com.SchoolBack.Model.teacherResponseDTO;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,70 +29,73 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class TeacherController {
 
 	private final TeacherService teacherService;
+	private final ValueMapper mapper;
 
-	@PostMapping
-	public ResponseEntity<APIResponse> saveTeacher(@Valid @RequestBody teacherDTO teacher) {
-
-		log.info("TeacherController::saveTeacher request body {}", ValueMapper.jsonAsString(teacher));
-		Teacher th = teacherService.save(teacher);
-
-		APIResponse<Teacher> responseDTO = APIResponse
-		.<Teacher>builder()
-		.status(HttpStatus.OK.getReasonPhrase())
-		.results(th)
-		.build();
-
-		log.info("TeacherController::saveTeacher response {}", ValueMapper.jsonAsString(responseDTO));
-		return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
-	}
+//	@PostMapping
+//	public ResponseEntity<APIResponse> saveTeacher(@Valid @RequestBody teacherUpdateDTO teacher) {
+//
+//		log.info("TeacherController::saveTeacher request body {}", ValueMapper.jsonAsString(teacher));
+//		Teacher th = teacherService.save(teacher);
+//
+//		APIResponse<Teacher> responseDTO = APIResponse
+//		.<Teacher>builder()
+//		.status(HttpStatus.OK.getReasonPhrase())
+//		.results(th)
+//		.build();
+//
+//		log.info("TeacherController::saveTeacher response {}", ValueMapper.jsonAsString(responseDTO));
+//		return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
+//	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<APIResponse> getTeacher(@PathVariable("id") Long id) {
 		log.info("TeacherController::getTeacher by id  {}", id);
 		Teacher th = teacherService.findById(id);
-
-		APIResponse<Teacher> responseDTO = APIResponse
-		.<Teacher>builder()
+		th.getClasses();
+		
+		teacherResponseDTO teacher = mapper.convertTeacherToTeacherDTO(th);
+		
+		APIResponse<teacherResponseDTO> responseDTO = APIResponse
+		.<teacherResponseDTO>builder()
 		.status(HttpStatus.OK.getReasonPhrase())
-		.results(th)
+		.results(teacher)
 		.build();
 
-		log.info("TeacherController::getTeacher by id {} response {}", id, ValueMapper.jsonAsString(responseDTO));
+		log.info("TeacherController::getTeacher by id {} response {}", id, mapper.jsonAsString(responseDTO));
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 	
 	@GetMapping
-	public ResponseEntity<APIResponse<PagedResponseDTO<Teacher>>> getAllTeacher(
+	public ResponseEntity<APIResponse<List<teacherResponseDTO>>> getAllTeacher(
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "id") String sortBy,
-		@RequestParam(defaultValue = "asc") String sortDirection) {
+		@RequestParam(defaultValue = "asc") String sortDirection,
+		@RequestParam(defaultValue = "") String filter) {
 
-		log.info("TeacherController::getAllTeacher with page {} size {} sortBy {} sortDirection {}", page, size, sortBy, sortDirection);
-		Page<Teacher> teachers = teacherService.findAll(page, size, sortBy, sortDirection);
+		log.info("TeacherController::getAllTeacher with page {} size {} sortBy {} sortDirection {} filter {}", page, size, sortBy, sortDirection,filter);
+		Page<Teacher> teachers = teacherService.findAll(page, size, sortBy, sortDirection,filter);
 
-		PagedResponseDTO<Teacher> pagedResponseDTO = PagedResponseDTO.<Teacher>builder()
-		.content(teachers.getContent())
+		Page<teacherResponseDTO> thDTOResponse = teachers.map(teacher -> mapper.convertTeacherToTeacherDTO(teacher));
+		
+		APIResponse<List<teacherResponseDTO>> responseDTO = APIResponse
+		.<List<teacherResponseDTO>>builder()
+		.status(HttpStatus.OK.getReasonPhrase())
+		.results(thDTOResponse.getContent())
 		.Page(page)
 		.PageSize(size)
-		.totalElements(teachers.getTotalElements())
+		.totalElements(thDTOResponse.getTotalElements())
 		.sortBy(sortBy)
 		.sortDirection(sortDirection)
 		.build();
 
-		APIResponse<PagedResponseDTO<Teacher>> responseDTO = APIResponse
-		.<PagedResponseDTO<Teacher>>builder()
-		.status(HttpStatus.OK.getReasonPhrase())
-		.results(pagedResponseDTO)
-		.build();
-
-		log.info("TeacherController::getAllTeacher response {}", ValueMapper.jsonAsString(responseDTO));
+		log.info("TeacherController::getAllTeacher response {}", mapper.jsonAsString(responseDTO));
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<APIResponse> updateTeacher(@PathVariable("id") Long id, @RequestBody teacherDTO updatedTeacher) {
-		log.info("TeacherController::updateTeacher with id {} request body {} ", id, ValueMapper.jsonAsString(updatedTeacher));
+	public ResponseEntity<APIResponse> updateTeacher(@PathVariable("id") Long id, @RequestBody teacherUpdateDTO updatedTeacher) {
+		log.info("TeacherController::updateTeacher with id {} request body {} ", id, mapper.jsonAsString(updatedTeacher));
 		Teacher th = teacherService.update(id, updatedTeacher);
 
 		APIResponse<Teacher> responseDTO = APIResponse
@@ -101,7 +104,7 @@ public class TeacherController {
 		.results(th)
 		.build();
 
-		log.info("TeacherController::updateTeacher response {}", ValueMapper.jsonAsString(responseDTO));
+		log.info("TeacherController::updateTeacher response {}", mapper.jsonAsString(responseDTO));
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 
@@ -115,7 +118,7 @@ public class TeacherController {
 		.status(HttpStatus.OK.getReasonPhrase())
 		.build();
 
-		log.info("TeacherController::deleteTeacher by id {}  response {}", id, ValueMapper.jsonAsString(responseDTO));
+		log.info("TeacherController::deleteTeacher by id {}  response {}", id, mapper.jsonAsString(responseDTO));
 		return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
 	}
 

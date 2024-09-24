@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class AuthUserDTO {
+public class loginUser {
 	@Email(message = "INVALID email address")
 	private String email;
 	@NotBlank(message = "password shouldn't be EMPTY")

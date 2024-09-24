@@ -2,6 +2,7 @@ package com.SchoolBack.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.SchoolBack.Entity.Interface.Activable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -11,17 +12,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -29,6 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "student")
 public class Student implements Activable{
 	
@@ -43,6 +43,7 @@ public class Student implements Activable{
 	private String major;
 	
 	@Column(name = "active")
+	@JsonIgnore
 	private boolean isActive;
 	
 	@JsonIgnore
@@ -50,13 +51,12 @@ public class Student implements Activable{
 	@JoinColumn(name = "id_school")
 	private School school;
 	
-	@JsonIgnore
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_email", referencedColumnName = "email",unique = true)
 	private User user;
 	
 	@JsonManagedReference
 	@OneToMany(mappedBy = "student" ,fetch = FetchType.LAZY) 
-	private List<Enrollment> enrollments;
+	private Set<Enrollment> enrollments;
 	
 }

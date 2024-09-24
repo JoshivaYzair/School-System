@@ -16,10 +16,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -27,6 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "teacher")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Teacher implements Activable{
@@ -38,6 +40,7 @@ public class Teacher implements Activable{
 	@Column (nullable = false)
 	private String name;
 	
+	@JsonIgnore
 	@Column(name = "active")
 	private boolean isActive;
 	
@@ -45,12 +48,12 @@ public class Teacher implements Activable{
 	private String departament;
 	
 	@JsonIgnore
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_email", referencedColumnName = "email")
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "user_email", referencedColumnName = "email", unique = true)
 	private User user;
 	
-	@JsonBackReference
+	@JsonManagedReference
 	@OneToMany (mappedBy = "teacher",fetch = FetchType.LAZY)
-	private List<Course> courses;
+	private Set<Class> classes;
 	
 }

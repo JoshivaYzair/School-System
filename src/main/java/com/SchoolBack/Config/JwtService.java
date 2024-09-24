@@ -1,6 +1,7 @@
 package com.SchoolBack.Config;
 
 import com.SchoolBack.Enum.Role;
+import com.SchoolBack.Entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -47,6 +48,8 @@ public class JwtService {
 	
 	public String generateToken(UserDetails user) {
 		Map<String, Object> claims = new HashMap<>();
+		Role role = ((User) user).getRole();
+		claims.put("role", role.name());
 		return createToken(claims, user);
 	}
 	

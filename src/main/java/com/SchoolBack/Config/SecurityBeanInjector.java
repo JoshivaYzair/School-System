@@ -44,7 +44,7 @@ public class SecurityBeanInjector {
 	public UserDetailsService userDetailsService() {
 		return email -> {
 			Optional<User> user = userRepository.findUserByEmail(email);
-			if (user.isPresent()) {
+			if (user.isPresent() && user.get().isActive()) {
 				return user.get();
 			} else {
 				throw new UsernameNotFoundException("User not found");

@@ -1,6 +1,10 @@
 package com.SchoolBack.Entity;
 
+import com.SchoolBack.Entity.Interface.Activable;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,9 +12,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -18,20 +24,30 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "enrollment")
-public class Enrollment {
-	
+@EqualsAndHashCode
+@Table(name = "enrollment", uniqueConstraints = {
+	@jakarta.persistence.UniqueConstraint(name = "unique_student_class", columnNames = {"id_student", "id_class"})
+})
+public class Enrollment implements Activable {
+
 	@Id
-	@GeneratedValue( strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "id_student")
 	@JsonBackReference
 	private Student student;
-	
+
 	@ManyToOne
-	@JoinColumn(name = "id_course")
-	private Course course;
-	
+	@JoinColumn(name = "id_class")
+	@JsonBackReference
+	private Class aClass;
+
+	@Column(name = "status")
+	private String status;
+
+	@JsonIgnore
+	@Column(name = "active")
+	private boolean isActive;
 }

@@ -6,6 +6,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class addStudentToCourseDTO {
+public class addStudentToClassDTO {
 	List<Long> studentList;
 }
