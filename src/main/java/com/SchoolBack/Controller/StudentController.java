@@ -53,8 +53,7 @@ public class StudentController {
 		
 		Student st = studentService.findStudentById(id);
 		
-		studentResponseDTO stDTO = mapper.convertStudentToStudentDTO(st);
-		stDTO.setEnrollment(st.getEnrollments());
+		studentResponseDTO stDTO = mapper.convertStudentToStudentDTO(st,true);
 		
 		APIResponse<studentResponseDTO> responseDTO = APIResponse
 		.<studentResponseDTO>builder()
@@ -78,7 +77,7 @@ public class StudentController {
 		log.info("StudentController::getAllStudent with page {} size {} sortBy {} sortDirection {}", page, size, sortBy, sortDirection);
 		Page<Student> students = studentService.findAll(page, size, sortBy, sortDirection,filter, filters);
 		
-		Page<studentResponseDTO> stDTOResponse = students.map(student -> mapper.convertStudentToStudentDTO(student));
+		Page<studentResponseDTO> stDTOResponse = students.map(student -> mapper.convertStudentToStudentDTO(student, false));
 			
 		APIResponse<List<studentResponseDTO>> responseDTO = APIResponse
 		.<List<studentResponseDTO>>builder()

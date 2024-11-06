@@ -38,8 +38,8 @@ C:\Users\joshi\OneDrive\Escritorio\School-back\SchoolBack\src\main\java\com\Scho
 C:\Users\joshi\OneDrive\Escritorio\School-back\SchoolBack\src\main\java\com\SchoolBack\Model\classUpdateDTO.java
 C:\Users\joshi\OneDrive\Escritorio\School-back\SchoolBack\src\main\java\com\SchoolBack\Model\courseResponseDTO.java
 C:\Users\joshi\OneDrive\Escritorio\School-back\SchoolBack\src\main\java\com\SchoolBack\Model\courseUpdateDTO.java
-C:\Users\joshi\OneDrive\Escritorio\School-back\SchoolBack\src\main\java\com\SchoolBack\Model\enrollmentResponseDTO.java
-C:\Users\joshi\OneDrive\Escritorio\School-back\SchoolBack\src\main\java\com\SchoolBack\Model\enrollmentUpdateDTO.java
+C:\Users\joshi\OneDrive\Escritorio\School-back\SchoolBack\src\main\java\com\SchoolBack\Model\enrollmentClassStudentResponseDTO.java
+C:\Users\joshi\OneDrive\Escritorio\School-back\SchoolBack\src\main\java\com\SchoolBack\Model\enrollmentClassStudentUpdateDTO.java
 C:\Users\joshi\OneDrive\Escritorio\School-back\SchoolBack\src\main\java\com\SchoolBack\Model\ErrorDTO.java
 C:\Users\joshi\OneDrive\Escritorio\School-back\SchoolBack\src\main\java\com\SchoolBack\Model\loginUser.java
 C:\Users\joshi\OneDrive\Escritorio\School-back\SchoolBack\src\main\java\com\SchoolBack\Model\registerUser.java

@@ -52,8 +52,8 @@ public class Class implements Activable{
 	@JsonBackReference
 	private Teacher teacher;
 	
-	@OneToMany(mappedBy = "aClass", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonBackReference 
+	@OneToMany(mappedBy = "aClass", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Enrollment> enrollments;
 	
 	@JsonIgnore

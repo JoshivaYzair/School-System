@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class enrollmentUpdateDTO {
+public class enrollmentClassStudentUpdateDTO {
 
 	private Long studentId;
 	private Long classId;

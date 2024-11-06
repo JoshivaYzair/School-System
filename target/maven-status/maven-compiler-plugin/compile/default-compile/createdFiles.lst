@@ -1,5 +1,6 @@
 com\SchoolBack\Entity\Student.class
 com\SchoolBack\Model\courseResponseDTO$courseResponseDTOBuilder.class
+com\SchoolBack\Model\enrollmentClassStudentResponseDTO$enrollmentClassStudentResponseDTOBuilder.class
 com\SchoolBack\Model\APIResponse$APIResponseBuilder.class
 com\SchoolBack\Model\addStudentToClassDTO.class
 com\SchoolBack\HandlerException\StudentServiceExceptionHandler.class
@@ -7,7 +8,6 @@ com\SchoolBack\Repository\SchoolRepository.class
 com\SchoolBack\Exception\StudentNotFoundException.class
 com\SchoolBack\Model\teacherResponseDTO$teacherResponseDTOBuilder.class
 com\SchoolBack\Repository\TeacherRepository.class
-com\SchoolBack\Model\enrollmentUpdateDTO.class
 com\SchoolBack\Config\JwtAuthenticationFilter.class
 com\SchoolBack\Model\loginUser.class
 com\SchoolBack\Controller\ClassController.class
@@ -18,7 +18,7 @@ com\SchoolBack\Exception\CourseNotFoundException.class
 com\SchoolBack\Entity\Course.class
 com\SchoolBack\Service\StudentService.class
 com\SchoolBack\Model\classUpdateDTO.class
-com\SchoolBack\Model\enrollmentResponseDTO.class
+com\SchoolBack\Model\enrollmentClassStudentResponseDTO.class
 com\SchoolBack\Model\userUpdateDTO.class
 com\SchoolBack\Service\EnrollmentService.class
 com\SchoolBack\Entity\Course$CourseBuilder.class
@@ -57,6 +57,7 @@ com\SchoolBack\Entity\User$UserBuilder.class
 com\SchoolBack\Entity\User.class
 com\SchoolBack\Repository\UserRepository.class
 com\SchoolBack\Config\SecurityBeanInjector.class
+com\SchoolBack\Model\enrollmentClassStudentUpdateDTO.class
 com\SchoolBack\Model\APIResponse.class
 com\SchoolBack\Service\UserService.class
 com\SchoolBack\Controller\UserController.class

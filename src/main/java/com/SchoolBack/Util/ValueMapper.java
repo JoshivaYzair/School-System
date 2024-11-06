@@ -10,6 +10,7 @@ import com.SchoolBack.Model.classResponseDTO;
 import com.SchoolBack.Model.classUpdateDTO;
 import com.SchoolBack.Model.courseResponseDTO;
 import com.SchoolBack.Model.courseUpdateDTO;
+import com.SchoolBack.Model.enrollmentClassStudentResponseDTO;
 import com.SchoolBack.Model.registerUser;
 import com.SchoolBack.Model.studentUpdateDTO;
 import com.SchoolBack.Model.studentResponseDTO;
@@ -48,13 +49,27 @@ public class ValueMapper {
 		.build();
 	}
 
-	public studentResponseDTO convertStudentToStudentDTO(Student student) {
-
+	public studentResponseDTO convertStudentToStudentDTO(Student student, boolean loadClass) {
+		
+		Set<enrollmentClassStudentResponseDTO> enrollmentDTOs = null;
+		if (loadClass) {
+			enrollmentDTOs = student.getEnrollments().stream()
+			.map(enrollment -> enrollmentClassStudentResponseDTO.builder()
+			.id(enrollment.getId())
+			.status(enrollment.getStatus())
+			.student(null)
+			.aClass(this.convertClassToClassDTO(enrollment.getAClass(), false))
+			.build()
+			)
+			.collect(Collectors.toSet());
+		}
+		
 		return studentResponseDTO.builder()
 		.id(student.getId())
 		.name(student.getName())
 		.major(student.getMajor())
 		.email(student.getUser().getEmail())
+		.enrollment(enrollmentDTOs)
 		.build();
 	}
 
@@ -101,10 +116,10 @@ public class ValueMapper {
 	}
 
 	public courseResponseDTO convertCourseToCourseDTO(Course course, boolean noLazyLoad) {
-		Set<classResponseDTO> classDTOs=null;
+		Set<classResponseDTO> classDTOs = null;
 		if (noLazyLoad) {
 			classDTOs = course.getClasses().stream()
-			.map(this::convertClassToClassDTO)
+			.map(aClass -> this.convertClassToClassDTO(aClass, false))
 			.collect(Collectors.toSet());
 		}
 		return courseResponseDTO.builder()
@@ -125,14 +140,29 @@ public class ValueMapper {
 		.build();
 	}
 
-	public classResponseDTO convertClassToClassDTO(Class aClass) {
+	public classResponseDTO convertClassToClassDTO(Class aClass, boolean loadStudent) {
+		Set<enrollmentClassStudentResponseDTO> enrollmentDTOs = null;
+
+		if (loadStudent) {
+			enrollmentDTOs = aClass.getEnrollments().stream()
+			.map(enrollment -> enrollmentClassStudentResponseDTO.builder()
+			.id(enrollment.getId())
+			.status(enrollment.getStatus())
+			.student(this.convertStudentToStudentDTO(enrollment.getStudent(),false))
+			.aClass(null)
+			.build()
+			)
+			.collect(Collectors.toSet());
+		}
+
 		return classResponseDTO.builder()
 		.id(aClass.getId())
 		.name(aClass.getName())
 		.schedule(aClass.getSchedule())
-		.techaer(aClass.getTeacher().getName())
-		.teacherID(aClass.getTeacher().getId())
+		.totalStudent(aClass.getEnrollments().size())
+		.teacher(this.convertTeacherToTeacherDTO(aClass.getTeacher()))
 		.courseCode(aClass.getCourse().getCourseCode())
+		.enrollments(enrollmentDTOs)
 		.build();
 	}
 

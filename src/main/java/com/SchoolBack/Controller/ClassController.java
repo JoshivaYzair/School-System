@@ -53,8 +53,7 @@ public class ClassController {
 		log.info("CourseController::getCourse by id  {}", id);
 		Class cs = classService.findById(id);
 
-		classResponseDTO classDTO = mapper.convertClassToClassDTO(cs);
-		classDTO.setEnrollments(cs.getEnrollments());
+		classResponseDTO classDTO = mapper.convertClassToClassDTO(cs, true);
 		
 		APIResponse<classResponseDTO> responseDTO = APIResponse
 		.<classResponseDTO>builder()
@@ -76,7 +75,7 @@ public class ClassController {
 		log.info("ClassController::getAllClasses with page {} size {} sortBy {} sortDirection {}", page, size, sortBy, sortDirection);
 		Page<Class> classes = classService.findAll(page, size, sortBy, sortDirection);
 
-		Page<classResponseDTO> classDTO = classes.map(aClass -> mapper.convertClassToClassDTO(aClass));
+		Page<classResponseDTO> classDTO = classes.map(aClass -> mapper.convertClassToClassDTO(aClass,false));
 
 		APIResponse<List<classResponseDTO>> responseDTO = APIResponse
 		.<List<classResponseDTO>>builder()

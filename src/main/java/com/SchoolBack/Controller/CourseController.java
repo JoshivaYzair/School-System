@@ -77,7 +77,7 @@ public class CourseController {
 		Page<Course> courses = courseService.findAll(page, size, sortBy, sortDirection, filter,filters);
 
 		Page<courseResponseDTO> couseDTO = courses.map(course -> mapper.convertCourseToCourseDTO(course,false));
-
+		
 		APIResponse<List<courseResponseDTO>> responseDTO = APIResponse
 		.<List<courseResponseDTO>>builder()
 		.status(HttpStatus.OK.getReasonPhrase())

@@ -21,7 +21,9 @@ public class classResponseDTO {
 	private String name;
 	private String schedule;
 	private String courseCode;
-	private String techaer;
-	private long teacherID;
-	private Set<Enrollment> enrollments;
+	//private String techaer;
+	//private long teacherID;
+	private int totalStudent;
+	private teacherResponseDTO teacher;
+	private Set<enrollmentClassStudentResponseDTO> enrollments;
 }

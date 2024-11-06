@@ -18,6 +18,6 @@ public class studentResponseDTO {
 	private String name;
 	private String major;
 	private String email;
-	private Set  <Enrollment> enrollment;
+	private Set  <enrollmentClassStudentResponseDTO> enrollment;
 }
 
