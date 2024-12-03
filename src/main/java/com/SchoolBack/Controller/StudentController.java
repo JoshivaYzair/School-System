@@ -1,17 +1,18 @@
 package com.SchoolBack.Controller;
 
-import com.SchoolBack.Model.registerUser;
+import com.SchoolBack.DTO.registerUser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.SchoolBack.Entity.Student;
-import com.SchoolBack.Model.APIResponse;
-import com.SchoolBack.Model.studentUpdateDTO;
-import com.SchoolBack.Model.studentResponseDTO;
+import com.SchoolBack.DTO.APIResponse;
+import com.SchoolBack.DTO.Request.Student.studentUpdateDTO;
+import com.SchoolBack.DTO.studentResponseDTO;
 import com.SchoolBack.Service.StudentService;
 import com.SchoolBack.Util.ValueMapper;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -46,15 +47,14 @@ public class StudentController {
 //		log.info("StudentController::createNewStudent response {}", ValueMapper.jsonAsString(responseDTO));
 //		return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
 //	}
-
 	@GetMapping("/{id}")
 	public ResponseEntity<APIResponse> getStudent(@PathVariable("id") Long id) {
 		log.info("StudentController::getStudent by id  {}", id);
-		
+
 		Student st = studentService.findStudentById(id);
-		
-		studentResponseDTO stDTO = mapper.convertStudentToStudentDTO(st,true);
-		
+
+		studentResponseDTO stDTO = mapper.convertStudentToStudentDTO(st, true,true);
+
 		APIResponse<studentResponseDTO> responseDTO = APIResponse
 		.<studentResponseDTO>builder()
 		.status(HttpStatus.OK.getReasonPhrase())
@@ -67,18 +67,18 @@ public class StudentController {
 
 	@GetMapping
 	public ResponseEntity<APIResponse<List<studentResponseDTO>>> getAllStudent(
-		@RequestParam(defaultValue = "0") int page,
-		@RequestParam(defaultValue = "10") int size,
-		@RequestParam(defaultValue = "id") String sortBy,
-		@RequestParam(defaultValue = "asc") String sortDirection,
-		@RequestParam(defaultValue = "") String filter,
-		@RequestParam(required = false) List<String> filters) {
+	@RequestParam(defaultValue = "0") int page,
+	@RequestParam(defaultValue = "10") int size,
+	@RequestParam(defaultValue = "id") String sortBy,
+	@RequestParam(defaultValue = "asc") String sortDirection,
+	@RequestParam(defaultValue = "") String filter,
+	@RequestParam(required = false) List<String> filters) {
 
 		log.info("StudentController::getAllStudent with page {} size {} sortBy {} sortDirection {}", page, size, sortBy, sortDirection);
-		Page<Student> students = studentService.findAll(page, size, sortBy, sortDirection,filter, filters);
-		
-		Page<studentResponseDTO> stDTOResponse = students.map(student -> mapper.convertStudentToStudentDTO(student, false));
-			
+		Page<Student> students = studentService.findAll(page, size, sortBy, sortDirection, filter, filters);
+
+		Page<studentResponseDTO> stDTOResponse = students.map(student -> mapper.convertStudentToStudentDTO(student, false,true));
+
 		APIResponse<List<studentResponseDTO>> responseDTO = APIResponse
 		.<List<studentResponseDTO>>builder()
 		.status(HttpStatus.OK.getReasonPhrase())
@@ -91,6 +91,24 @@ public class StudentController {
 		.build();
 
 		log.info("StudentController::getAllStudent response {}", mapper.jsonAsString(responseDTO));
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+	}
+
+	@GetMapping("/available/class/{id}")
+	public ResponseEntity<APIResponse<List<studentResponseDTO>>> getStudentsAvailableForClass(@PathVariable("id") Long id) {
+		log.info("StudentController::getStudentsAvailableForClass with IdClass {} ", id);
+		List<Student> students = studentService.getStudentsAvailableForClass(id);
+		List<studentResponseDTO> stDTOResponse = students.stream()
+		.map(student -> mapper.convertStudentToStudentDTO(student, false,true))
+		.collect(Collectors.toList());
+
+		APIResponse<List<studentResponseDTO>> responseDTO = APIResponse
+		.<List<studentResponseDTO>>builder()
+		.status(HttpStatus.OK.getReasonPhrase())
+		.results(stDTOResponse)
+		.build();
+
+		log.info("StudentController::getStudentsAvailableForClass response {}", mapper.jsonAsString(responseDTO));
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 

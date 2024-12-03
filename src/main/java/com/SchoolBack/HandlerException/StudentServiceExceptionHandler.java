@@ -2,8 +2,8 @@ package com.SchoolBack.HandlerException;
 
 import com.SchoolBack.Exception.StudentNotFoundException;
 import com.SchoolBack.Exception.StudentServiceBusinessException;
-import com.SchoolBack.Model.APIResponse;
-import com.SchoolBack.Model.ErrorDTO;
+import com.SchoolBack.DTO.APIResponse;
+import com.SchoolBack.DTO.ErrorDTO;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

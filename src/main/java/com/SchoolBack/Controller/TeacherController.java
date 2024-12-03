@@ -1,10 +1,10 @@
 package com.SchoolBack.Controller;
 
-import com.SchoolBack.Model.teacherUpdateDTO;
+import com.SchoolBack.DTO.Request.Teacher.teacherUpdateDTO;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.SchoolBack.Entity.Teacher;
-import com.SchoolBack.Model.APIResponse;
+import com.SchoolBack.DTO.APIResponse;
 import com.SchoolBack.Service.TeacherService;
 import com.SchoolBack.Util.ValueMapper;
 import jakarta.validation.Valid;
@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import com.SchoolBack.Model.teacherResponseDTO;
+import com.SchoolBack.DTO.teacherResponseDTO;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;

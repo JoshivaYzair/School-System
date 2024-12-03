@@ -1,15 +1,15 @@
 package com.SchoolBack.Service;
 
 import com.SchoolBack.Config.JwtService;
-import com.SchoolBack.Model.loginUser;
-import com.SchoolBack.Model.TokenDTO;
+import com.SchoolBack.DTO.loginUser;
+import com.SchoolBack.DTO.TokenDTO;
 import com.SchoolBack.Repository.UserRepository;
 import com.SchoolBack.Entity.User;
 import com.SchoolBack.Entity.Student;
 import com.SchoolBack.Entity.Teacher;
 import com.SchoolBack.Exception.UserNotFoundException;
 import com.SchoolBack.Exception.UserServiceBusinessException;
-import com.SchoolBack.Model.registerUser;
+import com.SchoolBack.DTO.registerUser;
 import com.SchoolBack.Util.ValueMapper;
 import java.util.List;
 import java.util.Optional;

@@ -4,8 +4,9 @@ import com.SchoolBack.Repository.StudentRepository;
 import com.SchoolBack.Entity.Student;
 import com.SchoolBack.Exception.StudentNotFoundException;
 import com.SchoolBack.Exception.StudentServiceBusinessException;
-import com.SchoolBack.Model.studentUpdateDTO;
+import com.SchoolBack.DTO.Request.Student.studentUpdateDTO;
 import com.SchoolBack.Util.GenericSpecifications;
+import com.SchoolBack.Util.StudentSpecifications;
 import com.SchoolBack.Util.ValueMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -110,6 +111,7 @@ public class StudentService {
 			if (majors != null && !majors.isEmpty()) {
 				spec = spec.and(GenericSpecifications.hasFieldInList("major", majors));
 			}
+			
 			studentResult = repository.findAll(spec, pageable);
 			//log.debug("StudentService:findAll received response from Database {}", mapper.jsonAsString(studentResult));
 		} catch (Exception e) {
@@ -117,6 +119,25 @@ public class StudentService {
 			throw new StudentServiceBusinessException("Exception occurred while fetch a student: " + e.getMessage());
 		}
 		log.info("StudentService:findAll execution ended.");
+		return studentResult;
+	}
+	
+	public List<Student> getStudentsAvailableForClass(long idClass) {
+		List studentResult;
+		try {
+			log.info("StudentService:getStudentsAvailableForClass execution started.");
+			log.debug("StudentService:getStudentsAvailableForClass request parameters :IdClass {}", idClass);
+			
+			Specification<Student> spec = GenericSpecifications.isActive();
+			spec = spec.and(StudentSpecifications.notEnrolledInClass(idClass));
+
+			studentResult = repository.findAll(spec);
+			//log.debug("StudentService:findAll received response from Database {}", mapper.jsonAsString(studentResult));
+		} catch (Exception e) {
+			log.error("Exception occurred while persisting student to database , Exception message {}", e.getMessage());
+			throw new StudentServiceBusinessException("Exception occurred while fetch a student: " + e.getMessage());
+		}
+		log.info("StudentService:getStudentsAvailableForClass execution ended.");
 		return studentResult;
 	}
 }

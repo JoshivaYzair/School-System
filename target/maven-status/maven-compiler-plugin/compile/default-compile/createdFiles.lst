@@ -3,6 +3,7 @@ com\SchoolBack\Model\courseResponseDTO$courseResponseDTOBuilder.class
 com\SchoolBack\Model\enrollmentClassStudentResponseDTO$enrollmentClassStudentResponseDTOBuilder.class
 com\SchoolBack\Model\APIResponse$APIResponseBuilder.class
 com\SchoolBack\Model\addStudentToClassDTO.class
+com\SchoolBack\Util\StudentSpecifications.class
 com\SchoolBack\HandlerException\StudentServiceExceptionHandler.class
 com\SchoolBack\Repository\SchoolRepository.class
 com\SchoolBack\Exception\StudentNotFoundException.class

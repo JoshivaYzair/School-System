@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.SchoolBack.Entity.Teacher;
 import com.SchoolBack.Exception.TeacherNotFoundException;
 import com.SchoolBack.Exception.TeacherServiceBusinessException;
-import com.SchoolBack.Model.teacherUpdateDTO;
+import com.SchoolBack.DTO.Request.Teacher.teacherUpdateDTO;
 import com.SchoolBack.Util.ValueMapper;
 import com.SchoolBack.Util.GenericSpecifications;
 import org.springframework.data.domain.Page;

@@ -6,20 +6,21 @@ import com.SchoolBack.Entity.Teacher;
 import com.SchoolBack.Entity.User;
 import com.SchoolBack.Entity.Class;
 import com.SchoolBack.Enum.Role;
-import com.SchoolBack.Model.classResponseDTO;
-import com.SchoolBack.Model.classUpdateDTO;
-import com.SchoolBack.Model.courseResponseDTO;
-import com.SchoolBack.Model.courseUpdateDTO;
-import com.SchoolBack.Model.enrollmentClassStudentResponseDTO;
-import com.SchoolBack.Model.registerUser;
-import com.SchoolBack.Model.studentUpdateDTO;
-import com.SchoolBack.Model.studentResponseDTO;
-import com.SchoolBack.Model.teacherUpdateDTO;
+import com.SchoolBack.DTO.classResponseDTO;
+import com.SchoolBack.DTO.Request.Class.classUpdateDTO;
+import com.SchoolBack.DTO.courseResponseDTO;
+import com.SchoolBack.DTO.Request.Course.courseUpdateDTO;
+import com.SchoolBack.DTO.enrollmentClassStudentResponseDTO;
+import com.SchoolBack.DTO.registerUser;
+import com.SchoolBack.DTO.Request.Student.studentUpdateDTO;
+import com.SchoolBack.DTO.studentResponseDTO;
+import com.SchoolBack.DTO.Request.Teacher.teacherUpdateDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.SchoolBack.Model.teacherResponseDTO;
+import com.SchoolBack.DTO.teacherResponseDTO;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,21 +50,22 @@ public class ValueMapper {
 		.build();
 	}
 
-	public studentResponseDTO convertStudentToStudentDTO(Student student, boolean loadClass) {
-		
-		Set<enrollmentClassStudentResponseDTO> enrollmentDTOs = null;
+	public studentResponseDTO convertStudentToStudentDTO(Student student, boolean loadClass, boolean loadActiveData) {
+
+		Set<enrollmentClassStudentResponseDTO> enrollmentDTOs = new HashSet<>();;
 		if (loadClass) {
 			enrollmentDTOs = student.getEnrollments().stream()
+			.filter(enrollment -> !loadActiveData || enrollment.isActive())
 			.map(enrollment -> enrollmentClassStudentResponseDTO.builder()
 			.id(enrollment.getId())
 			.status(enrollment.getStatus())
 			.student(null)
-			.aClass(this.convertClassToClassDTO(enrollment.getAClass(), false))
+			.aClass(this.convertClassToClassDTO(enrollment.getAClass(), false, true))
 			.build()
 			)
 			.collect(Collectors.toSet());
 		}
-		
+
 		return studentResponseDTO.builder()
 		.id(student.getId())
 		.name(student.getName())
@@ -115,13 +117,15 @@ public class ValueMapper {
 		.build();
 	}
 
-	public courseResponseDTO convertCourseToCourseDTO(Course course, boolean noLazyLoad) {
-		Set<classResponseDTO> classDTOs = null;
+	public courseResponseDTO convertCourseToCourseDTO(Course course, boolean noLazyLoad, boolean loadActiveData) {
+		Set<classResponseDTO> classDTOs = new HashSet<>();
 		if (noLazyLoad) {
-			classDTOs = course.getClasses().stream()
-			.map(aClass -> this.convertClassToClassDTO(aClass, false))
-			.collect(Collectors.toSet());
+			course.getClasses().stream()
+			.filter(aClass -> !loadActiveData || aClass.isActive())
+			.map(aClass -> this.convertClassToClassDTO(aClass, true, false))
+			.forEach(classDTOs::add); 
 		}
+		System.out.println(classDTOs.size());
 		return courseResponseDTO.builder()
 		.id(course.getId())
 		.name(course.getName())
@@ -140,15 +144,15 @@ public class ValueMapper {
 		.build();
 	}
 
-	public classResponseDTO convertClassToClassDTO(Class aClass, boolean loadStudent) {
-		Set<enrollmentClassStudentResponseDTO> enrollmentDTOs = null;
-
+	public classResponseDTO convertClassToClassDTO(Class aClass, boolean loadStudent, boolean loadActiveData) {
+		Set<enrollmentClassStudentResponseDTO> enrollmentDTOs = new HashSet<>();
 		if (loadStudent) {
 			enrollmentDTOs = aClass.getEnrollments().stream()
+			.filter(enrollment -> !loadActiveData || enrollment.isActive())
 			.map(enrollment -> enrollmentClassStudentResponseDTO.builder()
 			.id(enrollment.getId())
 			.status(enrollment.getStatus())
-			.student(this.convertStudentToStudentDTO(enrollment.getStudent(),false))
+			.student(this.convertStudentToStudentDTO(enrollment.getStudent(), false, false))
 			.aClass(null)
 			.build()
 			)
@@ -159,7 +163,7 @@ public class ValueMapper {
 		.id(aClass.getId())
 		.name(aClass.getName())
 		.schedule(aClass.getSchedule())
-		.totalStudent(aClass.getEnrollments().size())
+		.totalStudent(enrollmentDTOs.size())
 		.teacher(this.convertTeacherToTeacherDTO(aClass.getTeacher()))
 		.courseCode(aClass.getCourse().getCourseCode())
 		.enrollments(enrollmentDTOs)

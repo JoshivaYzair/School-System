@@ -3,8 +3,8 @@ package com.SchoolBack.HandlerException;
 
 import com.SchoolBack.Exception.TeacherNotFoundException;
 import com.SchoolBack.Exception.TeacherServiceBusinessException;
-import com.SchoolBack.Model.APIResponse;
-import com.SchoolBack.Model.ErrorDTO;
+import com.SchoolBack.DTO.APIResponse;
+import com.SchoolBack.DTO.ErrorDTO;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

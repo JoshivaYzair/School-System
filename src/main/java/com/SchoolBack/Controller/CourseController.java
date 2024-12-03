@@ -3,14 +3,14 @@ package com.SchoolBack.Controller;
 import com.SchoolBack.Service.CourseService;
 import lombok.RequiredArgsConstructor;
 import com.SchoolBack.Entity.Course;
-import com.SchoolBack.Model.APIResponse;
-import com.SchoolBack.Model.courseUpdateDTO;
+import com.SchoolBack.DTO.APIResponse;
+import com.SchoolBack.DTO.Request.Course.courseUpdateDTO;
 import com.SchoolBack.Util.ValueMapper;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import com.SchoolBack.Model.courseResponseDTO;
+import com.SchoolBack.DTO.courseResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -51,8 +51,8 @@ public class CourseController {
 	public ResponseEntity<APIResponse> getCourse(@PathVariable("id") Long id) {
 		log.info("CourseController::getCourse by id  {}", id);
 		Course cs = courseService.findById(id);
-		
-		courseResponseDTO couseDTO = mapper.convertCourseToCourseDTO(cs,true);
+
+		courseResponseDTO couseDTO = mapper.convertCourseToCourseDTO(cs, true, true);
 
 		APIResponse<courseResponseDTO> responseDTO = APIResponse
 		.<courseResponseDTO>builder()
@@ -74,10 +74,10 @@ public class CourseController {
 	@RequestParam(required = false) List<String> filters) {
 
 		log.info("CourseController::getAllCourses with page {} size {} sortBy {} sortDirection {}", page, size, sortBy, sortDirection);
-		Page<Course> courses = courseService.findAll(page, size, sortBy, sortDirection, filter,filters);
+		Page<Course> courses = courseService.findAll(page, size, sortBy, sortDirection, filter, filters);
 
-		Page<courseResponseDTO> couseDTO = courses.map(course -> mapper.convertCourseToCourseDTO(course,false));
-		
+		Page<courseResponseDTO> couseDTO = courses.map(course -> mapper.convertCourseToCourseDTO(course, false, false));
+
 		APIResponse<List<courseResponseDTO>> responseDTO = APIResponse
 		.<List<courseResponseDTO>>builder()
 		.status(HttpStatus.OK.getReasonPhrase())

@@ -30,6 +30,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "class")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class Class implements Activable{
 	
 	@Id

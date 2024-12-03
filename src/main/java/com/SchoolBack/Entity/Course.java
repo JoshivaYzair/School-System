@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,7 +47,7 @@ public class Course implements Activable{
 	
 	@OneToMany(mappedBy = "course",cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	@JsonManagedReference
-	private Set<Class> classes;
+	private List<Class> classes;
 	
 	@ManyToOne 
 	@JoinColumn(name = "id_school")

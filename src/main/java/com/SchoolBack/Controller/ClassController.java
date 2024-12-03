@@ -1,7 +1,7 @@
 package com.SchoolBack.Controller;
 
-import com.SchoolBack.Model.APIResponse;
-import com.SchoolBack.Model.classResponseDTO;
+import com.SchoolBack.DTO.APIResponse;
+import com.SchoolBack.DTO.classResponseDTO;
 import com.SchoolBack.Service.ClassService;
 import com.SchoolBack.Util.ValueMapper;
 import jakarta.validation.Valid;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.SchoolBack.Entity.Class;
-import com.SchoolBack.Model.classUpdateDTO;
+import com.SchoolBack.DTO.Request.Class.classUpdateDTO;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,7 +53,7 @@ public class ClassController {
 		log.info("CourseController::getCourse by id  {}", id);
 		Class cs = classService.findById(id);
 
-		classResponseDTO classDTO = mapper.convertClassToClassDTO(cs, true);
+		classResponseDTO classDTO = mapper.convertClassToClassDTO(cs, true,true);
 		
 		APIResponse<classResponseDTO> responseDTO = APIResponse
 		.<classResponseDTO>builder()
@@ -75,7 +75,7 @@ public class ClassController {
 		log.info("ClassController::getAllClasses with page {} size {} sortBy {} sortDirection {}", page, size, sortBy, sortDirection);
 		Page<Class> classes = classService.findAll(page, size, sortBy, sortDirection);
 
-		Page<classResponseDTO> classDTO = classes.map(aClass -> mapper.convertClassToClassDTO(aClass,false));
+		Page<classResponseDTO> classDTO = classes.map(aClass -> mapper.convertClassToClassDTO(aClass,false,true));
 
 		APIResponse<List<classResponseDTO>> responseDTO = APIResponse
 		.<List<classResponseDTO>>builder()
@@ -91,7 +91,7 @@ public class ClassController {
 		log.info("ClassController::getAllClasses response {}", mapper.jsonAsString(responseDTO));
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
-
+	
 	@PutMapping("/{id}")
 	public ResponseEntity<APIResponse> updateClass(@PathVariable("id") Long id, @RequestBody classUpdateDTO updatedClass) {
 		log.info("ClassController::updateClass with id {} request body {} ", id, mapper.jsonAsString(updatedClass));

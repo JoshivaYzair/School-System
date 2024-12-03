@@ -13,9 +13,10 @@ import com.SchoolBack.Exception.ClassServiceBuisinessException;
 import com.SchoolBack.Entity.Enrollment;
 import com.SchoolBack.Entity.Student;
 import com.SchoolBack.Entity.Class;
-import com.SchoolBack.Model.classUpdateDTO;
+import com.SchoolBack.DTO.Request.Class.classUpdateDTO;
 import org.springframework.data.domain.Sort;
 import com.SchoolBack.Util.GenericSpecifications;
+import jakarta.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -30,13 +31,13 @@ public class ClassService {
 	private final StudentService studentService;
 	private final ValueMapper mapper;
 
+	@Transactional
 	public Class findById(Long id) {
 		Class aClass;
 		try {
 			log.info("ClassService:findByID execution started.");
 			aClass = repository.findById(id).orElseThrow(
 			() -> new ClassNotFoundException("Class not found with id: " + id));
-
 			if (!aClass.isActive()) {
 				log.warn("Class with id {} is not active", id);
 				throw new ClassNotFoundException("Class not active with id: " + id);
@@ -49,6 +50,7 @@ public class ClassService {
 		return aClass;
 	}
 
+	@Transactional
 	public Class save(classUpdateDTO entity) {
 		Class classResult;
 		var teacher = teacherService.findById(entity.getTeacher());
@@ -130,7 +132,7 @@ public class ClassService {
 		log.info("ClassService:AddStudentToClass execution ended.");
 	}
 
-	//@Transactional
+	@Transactional
 	public void removeStudentFromClass(Long classId, List<Long> studentList) {
 		log.info("ClassService:RemoveStudentToClass execution started.");
 		Class aClass = this.findById(classId);
