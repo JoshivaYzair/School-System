@@ -1,5 +1,7 @@
 # School-System – Sistema Backend Escolar  
 
+[School-System Front - GitHub Repository](https://github.com/JoshivaYzair/School-System-Front.git)
+
 Este es un sistema monolítico REST desarrollado para gestionar un sistema escolar. Implementa autenticación y autorización robusta utilizando JWT y Spring Security, y ofrece paginación avanzada, filtrado, manejo de excepciones y un sistema seguro de gestión de rutas.  
 
 ---
