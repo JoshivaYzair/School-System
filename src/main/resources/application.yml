@@ -1,11 +1,12 @@
 spring:
   datasource:
-    #url: jdbc:postgresql://dpg-cqo214jv2p9s73aj5c1g-a.oregon-postgres.render.com:5432/systemschool
+    #url: jdbc:postgresql://dpg-cua3le5svqrc73dm0fs0-a.oregon-postgres.render.com:5432/schooldb_qz9u
     #username: systemschool_user
     #password: JRCYUVE3uphQA5sTfh6QCvhvpqF62StS
-    url: jdbc:postgresql://localhost:5432/securitydb
-    username: postgres
-    password: 1234
+    #url: jdbc:postgresql://localhost:5432/securitydb
+    url: ${URL}
+    username: ${USERNAMEDB}
+    password: ${PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 5000  # Tiempo de espera para obtener una conexión del pool en milisegundos (5 segundos)
@@ -24,5 +25,5 @@ spring:
 
 application:
   security:
-    secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+    secret-key: ${SECRET-KEY}
     expiration: 86400000 # a day

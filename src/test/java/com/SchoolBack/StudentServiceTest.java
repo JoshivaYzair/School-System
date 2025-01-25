@@ -2,6 +2,7 @@ package com.SchoolBack;
 
 import com.SchoolBack.DTO.Request.Student.studentUpdateDTO;
 import com.SchoolBack.Entity.Student;
+import com.SchoolBack.Entity.User;
 import com.SchoolBack.Exception.StudentServiceBusinessException;
 import com.SchoolBack.Repository.StudentRepository;
 import com.SchoolBack.Service.StudentService;
@@ -125,7 +126,7 @@ class StudentServiceTest {
 
         //Arrange
         Student student = new Student();
-        when(studentRepository.save(any(Student.class))).thenThrow(new RuntimeException("v"));
+        when(studentRepository.save(any(Student.class))).thenThrow(new RuntimeException(""));
 
         //Act & Assert
         StudentServiceBusinessException thrown = assertThrows(StudentServiceBusinessException.class, () -> {
@@ -192,5 +193,78 @@ class StudentServiceTest {
         verify(studentRepository, times(1)).findById(id);
         verifyNoMoreInteractions(mapper, studentRepository);
     }
+
+    @Test
+    void updateStudent_ShouldThrowException_WhenUserCannotBeUpdated() {
+        //Arrange
+        Long id = 1L;
+        studentUpdateDTO studentUpdate = new studentUpdateDTO();
+        studentUpdate.setName("Updated Name");
+        studentUpdate.setMajor("Updated Major");
+
+        Student studentToUpdate = new Student();
+        studentToUpdate.setId(id);
+        studentToUpdate.setName("Old Name");
+        studentToUpdate.setMajor("Old Major");
+        studentToUpdate.setActive(true);
+
+        Student updatedStudent = new Student();
+        updatedStudent.setId(id);
+        updatedStudent.setName(studentUpdate.getName());
+        updatedStudent.setMajor(studentUpdate.getMajor());
+        updatedStudent.setActive(true);
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(studentToUpdate));
+        when(mapper.updateStudentFromDTO(any(Student.class), any(studentUpdateDTO.class))).thenReturn(updatedStudent);
+        when(studentRepository.save(any(Student.class))).thenThrow(new RuntimeException("Database error"));
+
+        //Act & Assert
+        assertThrows(StudentServiceBusinessException.class, () -> studentService.update(id, studentUpdate));
+
+        verify(studentRepository, times(1)).findById(id);
+        verify(mapper, times(1)).updateStudentFromDTO(any(Student.class), any(studentUpdateDTO.class));
+        verify(studentRepository, times(1)).save(any(Student.class));
+    }
+
+    //===============[DeleteStudent Test]===============
+
+    @Test
+    void deleteStudentById_ShouldReturnNothing_WhenIsSuccesslyBeDeleted(){
+        //Arrange
+        Long id = 1L;
+
+        User user = new User();
+        user.setActive(true);
+        Student student = new Student();
+        student.setId(id);
+        student.setActive(true);
+        student.setUser(user);
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(student));
+        when(studentRepository.save(any(Student.class))).thenReturn(student);
+
+        //Act
+        studentService.deleteById(id);
+
+        //Asserts
+        verify(studentRepository, times(1)).findById(id);
+        verify(studentRepository, times(1)).save(student);
+
+    }
+
+    @Test
+    void deleteStudentById_ShouldThrowException_WhenStudentNotFound(){
+        //Arrange
+        Long id = 2L;
+
+        when(studentRepository.findById(id)).thenReturn(Optional.empty());
+
+        //Act & Assert
+        assertThrows(StudentServiceBusinessException.class, () -> studentService.deleteById(id));
+        verify(studentRepository, times(1)).findById(id);
+        verify(studentRepository, never()).save(any(Student.class));
+    }
+
+
 
 }

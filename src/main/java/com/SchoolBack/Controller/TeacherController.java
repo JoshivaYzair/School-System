@@ -52,9 +52,9 @@ public class TeacherController {
 		log.info("TeacherController::getTeacher by id  {}", id);
 		Teacher th = teacherService.findById(id);
 		th.getClasses();
-		
+
 		teacherResponseDTO teacher = mapper.convertTeacherToTeacherDTO(th);
-		
+
 		APIResponse<teacherResponseDTO> responseDTO = APIResponse
 		.<teacherResponseDTO>builder()
 		.status(HttpStatus.OK.getReasonPhrase())
@@ -64,20 +64,21 @@ public class TeacherController {
 		log.info("TeacherController::getTeacher by id {} response {}", id, mapper.jsonAsString(responseDTO));
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
-	
+
 	@GetMapping
 	public ResponseEntity<APIResponse<List<teacherResponseDTO>>> getAllTeacher(
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "id") String sortBy,
 		@RequestParam(defaultValue = "asc") String sortDirection,
-		@RequestParam(defaultValue = "") String filter) {
+		@RequestParam(defaultValue = "") String filter,
+		@RequestParam(required = false) List<String> filters) {
 
 		log.info("TeacherController::getAllTeacher with page {} size {} sortBy {} sortDirection {} filter {}", page, size, sortBy, sortDirection,filter);
-		Page<Teacher> teachers = teacherService.findAll(page, size, sortBy, sortDirection,filter);
+		Page<Teacher> teachers = teacherService.findAll(page, size, sortBy, sortDirection,filter,filters);
 
 		Page<teacherResponseDTO> thDTOResponse = teachers.map(teacher -> mapper.convertTeacherToTeacherDTO(teacher));
-		
+
 		APIResponse<List<teacherResponseDTO>> responseDTO = APIResponse
 		.<List<teacherResponseDTO>>builder()
 		.status(HttpStatus.OK.getReasonPhrase())

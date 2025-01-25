@@ -16,6 +16,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -94,7 +96,7 @@ public class TeacherService {
 		log.info("StudentService:deleteById execution ended.");
 	}
 
-	public Page<Teacher> findAll(int page, int size, String sortBy, String sortDirection,String filter) {
+	public Page<Teacher> findAll(int page, int size, String sortBy, String sortDirection,String filter, List<String> departaments) {
 		Page<Teacher> teacherResult;
 		try {
 			log.info("TeacherService:findAll execution started.");
@@ -103,8 +105,12 @@ public class TeacherService {
 			Specification<Teacher> spec = GenericSpecifications.isActive();
 			spec = spec.and(GenericSpecifications.hasNameOrEmail(filter));
 			Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+			if (departaments != null && !departaments.isEmpty()) {
+				spec = spec.and(GenericSpecifications.hasFieldInList("departament", departaments));
+			}
 			teacherResult = repository.findAll(spec, pageable);
-			log.debug("TeacherService:findAll received response from Database {}", mapper.jsonAsString(teacherResult));
+			//log.debug("TeacherService:findAll received response from Database {}", mapper.jsonAsString(teacherResult));
 		} catch (Exception e) {
 			log.error("Exception occurred while persisting teacher to database , Exception message {}", e.getMessage());
 			throw new TeacherServiceBusinessException("Exception occurred while fetch a teacher: " + e.getMessage());
