@@ -79,7 +79,7 @@ public class SecurityConfig {
 	@Bean
 	public  CorsConfigurationSource corsFilter() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.addAllowedOrigin("http://localhost:4200");
+		config.addAllowedOrigin("https://school-system-i6tj.onrender.com");
 		config.addAllowedHeader("*"); // Permitir cualquier cabecera
 		config.addAllowedMethod("*"); // Permitir cualquier método (GET, POST, etc.)
 
