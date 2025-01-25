@@ -79,7 +79,7 @@ public class SecurityConfig {
 	@Bean
 	public  CorsConfigurationSource corsFilter() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.addAllowedOrigin("https://school-system-i6tj.onrender.com");
+		config.addAllowedOrigin("https://school-system-front-9m7pmcjoq-joshivayzairs-projects.vercel.app");
 		config.addAllowedHeader("*"); // Permitir cualquier cabecera
 		config.addAllowedMethod("*"); // Permitir cualquier método (GET, POST, etc.)
 
